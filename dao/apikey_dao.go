@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xMADAN05/go-common/common/models"
+	"github.com/xMADAN05/go-common/models"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"

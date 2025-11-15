@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/xMADAN05/go-common/common/dao"
+	"github.com/xMADAN05/go-common/dao"
 
 	"github.com/gin-gonic/gin"
 )

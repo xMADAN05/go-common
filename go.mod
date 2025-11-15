@@ -1,4 +1,4 @@
-module github.com/xMADAN05/go-common/common
+module github.com/xMADAN05/go-common
 
 go 1.25.3
 

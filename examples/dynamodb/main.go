@@ -1,7 +1,7 @@
 package main
 
 import (
-	dynamodbutils "github.com/xMADAN05/go-common/common/utils/dynamodb"
+	dynamodbutils "github.com/xMADAN05/go-common/utils/dynamodb"
 )
 
 func main() {
