@@ -30,6 +30,16 @@ func (d *APIKeyDAO) Get(ctx context.Context, apiKey string) (*models.APIKeyRecor
 	return d.repo.Get(ctx, key)
 }
 
+func (d *APIKeyDAO) Update(
+	ctx context.Context,
+	key map[string]types.AttributeValue,
+	updateExpr string,
+	exprAttrValues map[string]types.AttributeValue,
+	exprAttrNames map[string]string,
+) error {
+	return d.Update(ctx, key, updateExpr, exprAttrValues, exprAttrNames)
+}
+
 func (d *APIKeyDAO) Delete(ctx context.Context, apiKey string) error {
 	key := map[string]types.AttributeValue{
 		"api_key": &types.AttributeValueMemberS{Value: apiKey},

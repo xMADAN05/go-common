@@ -75,6 +75,28 @@ func (r *DynamoRepository[T]) Get(ctx context.Context, key map[string]types.Attr
 
 }
 
+func (r *DynamoRepository[T]) Update(
+	ctx context.Context,
+	key map[string]types.AttributeValue,
+	updateExpr string,
+	exprAttrValues map[string]types.AttributeValue,
+	exprAttrNames map[string]string,
+) error {
+	input := &dynamodb.UpdateItemInput{
+		TableName:                 aws.String(r.tableName),
+		Key:                       key,
+		UpdateExpression:          aws.String(updateExpr),
+		ExpressionAttributeValues: exprAttrValues,
+	}
+	if exprAttrNames != nil {
+		input.ExpressionAttributeNames = exprAttrNames
+	}
+	_, err := r.client.UpdateItem(ctx, input)
+	if err != nil {
+		return fmt.Errorf("failed to update item: %w", err)
+	}
+}
+
 func (r *DynamoRepository[T]) Delete(ctx context.Context, key map[string]types.AttributeValue) error {
 	input := &dynamodb.DeleteItemInput{
 		TableName: aws.String(r.tableName),
