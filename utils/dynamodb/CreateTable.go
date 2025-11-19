@@ -12,8 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func CreateTable() {
-	tableName := "api_key_store"
+func CreateTable(tableName string) {
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-2"))

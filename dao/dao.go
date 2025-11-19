@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xMADAN05/go-common/models"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -14,37 +12,37 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-type APIKeyDAO struct {
+type DynamoRepository[T any] struct {
 	client    *dynamodb.Client
 	tableName string
 }
 
-func NewDAO(tableName string, region string) (*APIKeyDAO, error) {
+func NewRepository[T any](tableName string, region string) (*DynamoRepository[T], error) {
 	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
 	}
 	client := dynamodb.NewFromConfig(cfg)
-	return &APIKeyDAO{
+	return &DynamoRepository[T]{
 		client:    client,
 		tableName: tableName,
 	}, nil
 }
 
-func (dao *APIKeyDAO) Create(ctx context.Context, record models.APIKeyRecord) error {
-	item, err := attributevalue.MarshalMap(record)
+func (r *DynamoRepository[T]) Put(ctx context.Context, item T) error {
+	val, err := attributevalue.MarshalMap(item)
 	if err != nil {
-		return fmt.Errorf("failed to marshall api key record: %w", err)
+		return fmt.Errorf("failed to marshall item: %w", err)
 	}
 
 	input := &dynamodb.PutItemInput{
 
-		TableName: aws.String(dao.tableName),
-		Item:      item,
+		TableName: aws.String(r.tableName),
+		Item:      val,
 	}
 
-	_, err = dao.client.PutItem(ctx, input)
+	_, err = r.client.PutItem(ctx, input)
 	if err != nil {
 		return fmt.Errorf("failed to put item: %w", err)
 	}
@@ -52,15 +50,13 @@ func (dao *APIKeyDAO) Create(ctx context.Context, record models.APIKeyRecord) er
 	return nil
 }
 
-func (dao *APIKeyDAO) GetByID(ctx context.Context, apiKey string) (*models.APIKeyRecord, error) {
+func (r *DynamoRepository[T]) Get(ctx context.Context, key map[string]types.AttributeValue) (*T, error) {
 	input := &dynamodb.GetItemInput{
-		TableName: aws.String(dao.tableName),
-		Key: map[string]types.AttributeValue{
-			"api_key": &types.AttributeValueMemberS{Value: apiKey},
-		},
+		TableName: aws.String(r.tableName),
+		Key:       key,
 	}
 
-	res, err := dao.client.GetItem(ctx, input)
+	res, err := r.client.GetItem(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get item: %w", err)
 	}
@@ -69,7 +65,7 @@ func (dao *APIKeyDAO) GetByID(ctx context.Context, apiKey string) (*models.APIKe
 		return nil, fmt.Errorf("api key not found: %w", err)
 	}
 
-	var record models.APIKeyRecord
+	var record T
 
 	if err := attributevalue.UnmarshalMap(res.Item, &record); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal recrod: %w", err)
@@ -77,4 +73,18 @@ func (dao *APIKeyDAO) GetByID(ctx context.Context, apiKey string) (*models.APIKe
 
 	return &record, nil
 
+}
+
+func (r *DynamoRepository[T]) Delete(ctx context.Context, key map[string]types.AttributeValue) error {
+	input := &dynamodb.DeleteItemInput{
+		TableName: aws.String(r.tableName),
+		Key:       key,
+	}
+	_, err := r.client.DeleteItem(ctx, input)
+
+	if err != nil {
+		log.Fatalf("failed to delete item: %v", err)
+	}
+
+	return err
 }

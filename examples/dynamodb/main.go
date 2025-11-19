@@ -6,5 +6,5 @@ import (
 
 func main() {
 
-	dynamodbutils.CreateTable()
+	dynamodbutils.CreateTable("api_keys_table")
 }
