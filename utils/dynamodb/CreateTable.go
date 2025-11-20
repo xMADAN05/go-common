@@ -40,7 +40,6 @@ func CreateTable(tableName string) error {
 		BillingMode: types.BillingModePayPerRequest,
 	}
 
-	fmt.Printf("Creating table `%s`.\n", tableName)
 	_, err = client.CreateTable(ctx, input)
 	if err != nil {
 		var existsErr *types.ResourceInUseException
@@ -50,7 +49,7 @@ func CreateTable(tableName string) error {
 			return fmt.Errorf("failed to create table: %w", err)
 		}
 	} else {
-
+		fmt.Printf("Creating table `%s`.\n", tableName)
 		waiter := dynamodb.NewTableExistsWaiter(client)
 		err = waiter.Wait(ctx, &dynamodb.DescribeTableInput{
 			TableName: aws.String(tableName),
