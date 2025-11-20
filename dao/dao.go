@@ -95,6 +95,7 @@ func (r *DynamoRepository[T]) Update(
 	if err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
 	}
+	return nil
 }
 
 func (r *DynamoRepository[T]) Delete(ctx context.Context, key map[string]types.AttributeValue) error {
