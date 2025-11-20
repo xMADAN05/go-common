@@ -37,7 +37,7 @@ func (d *APIKeyDAO) Update(
 	exprAttrValues map[string]types.AttributeValue,
 	exprAttrNames map[string]string,
 ) error {
-	return d.Update(ctx, key, updateExpr, exprAttrValues, exprAttrNames)
+	return d.repo.Update(ctx, key, updateExpr, exprAttrValues, exprAttrNames)
 }
 
 func (d *APIKeyDAO) Delete(ctx context.Context, apiKey string) error {
