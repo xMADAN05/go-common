@@ -61,11 +61,11 @@ func (r *DynamoRepository[T]) GetAllRecords(ctx context.Context) ([]T, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan table :%w", err)
 		}
-		var items[]T
-		if err :=attributevalue.UnmarshalListOfMaps(page.Items, &items); if err != nil{
+		var items []T
+		if err := attributevalue.UnmarshalListOfMaps(page.Items, &items); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal items :%w", err)
 		}
-		res=append(res, items...)
+		res = append(res, items...)
 	}
 	return res, nil
 }
