@@ -23,6 +23,10 @@ func (d *APIKeyDAO) Put(ctx context.Context, Item models.APIKeyRecord) error {
 	return d.repo.Put(ctx, Item)
 }
 
+func (d *APIKeyDAO) GetAll(ctx context.Context, apiKey string) ([]models.APIKeyRecord, error) {
+	return d.repo.GetAllRecords(ctx)
+}
+
 func (d *APIKeyDAO) Get(ctx context.Context, apiKey string) (*models.APIKeyRecord, error) {
 	key := map[string]types.AttributeValue{
 		"api_key": &types.AttributeValueMemberS{Value: apiKey},
