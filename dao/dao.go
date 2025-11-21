@@ -50,26 +50,6 @@ func (r *DynamoRepository[T]) Put(ctx context.Context, item T) error {
 	return nil
 }
 
-func (r *DynamoRepository[T]) GetAllRecords(ctx context.Context) ([]T, error) {
-	input := &dynamodb.ScanInput{
-		TableName: aws.String(r.tableName),
-	}
-	var res []T
-	paginator := dynamodb.NewScanPaginator(r.client, input)
-	for paginator.HasMorePages() {
-		page, err := paginator.NextPage(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan table :%w", err)
-		}
-		var items []T
-		if err := attributevalue.UnmarshalListOfMaps(page.Items, &items); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal items :%w", err)
-		}
-		res = append(res, items...)
-	}
-	return res, nil
-}
-
 func (r *DynamoRepository[T]) Get(ctx context.Context, key map[string]types.AttributeValue) (*T, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(r.tableName),
@@ -93,6 +73,26 @@ func (r *DynamoRepository[T]) Get(ctx context.Context, key map[string]types.Attr
 
 	return &record, nil
 
+}
+
+func (r *DynamoRepository[T]) GetAllRecords(ctx context.Context) ([]T, error) {
+	input := &dynamodb.ScanInput{
+		TableName: aws.String(r.tableName),
+	}
+	var res []T
+	paginator := dynamodb.NewScanPaginator(r.client, input)
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan table :%w", err)
+		}
+		var items []T
+		if err := attributevalue.UnmarshalListOfMaps(page.Items, &items); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal items :%w", err)
+		}
+		res = append(res, items...)
+	}
+	return res, nil
 }
 
 func (r *DynamoRepository[T]) Update(
