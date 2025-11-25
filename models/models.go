@@ -6,4 +6,5 @@ type APIKeyRecord struct {
 	Active      string `dynamodbav:"active"`
 	Scopes      string `dynamodbav:"scopes"`
 	ExpiresAt   string `dynamodbav:"expires_at"`
+	CreatedAt   string `dynamodbav:"created_at"`
 }
