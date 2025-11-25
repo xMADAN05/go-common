@@ -1,16 +1,16 @@
 package dto
 
 type CreateAPIKeyRequest struct {
-	Name      string `json:"name" binding:"required"`
-	ExpiresAt string `json:"expires_at,omitempty"`
-	Scopes    string `json:"scopes,omitempty"`
+	ServiceName string `json:"service_name" binding:"required"`
+	ExpiresAt   string `json:"expires_at,omitempty"`
+	Scopes      string `json:"scopes,omitempty"`
 }
 
 type CreateAPIKeyResponse struct {
-	APIKey    string `json:"api_key"`
-	Name      string `json:"name"`
-	ExpiresAt string `json:"expires_at,omitempty"`
-	Scopes    string `json:"scopes,omitempty"`
+	APIKey      string `json:"api_key"`
+	ServiceName string `json:"service_name"`
+	ExpiresAt   string `json:"expires_at,omitempty"`
+	Scopes      string `json:"scopes,omitempty"`
 }
 
 type UpdateAPIKeyRequest struct {
@@ -19,8 +19,8 @@ type UpdateAPIKeyRequest struct {
 }
 
 type APIKeyResponse struct {
-	APIKey    string `json:"api_key"`
-	Name      string `json:"name"`
-	ExpiresAt string `json:"expires_at,omitempty"`
-	Scopes    string `json:"scopes,omitempty"`
+	APIKey      string `json:"api_key"`
+	ServiceName string `json:"service_name"`
+	ExpiresAt   string `json:"expires_at,omitempty"`
+	Scopes      string `json:"scopes,omitempty"`
 }
