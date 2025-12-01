@@ -10,6 +10,12 @@ const ContextKeyRequestID = "context_id"
 func ContextIDMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		contextID := ctx.GetHeader("X-Context-ID")
+
+		if contextID != "" {
+			if _, err := uuid.Parse(contextID); err != nil {
+				contextID = uuid.New().String()
+			}
+		}
 		if contextID == "" {
 			contextID = uuid.New().String()
 		}

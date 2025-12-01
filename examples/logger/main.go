@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/xMADAN05/go-common/common/logger"
+	"github.com/xMADAN05/go-common/logger"
 
 	"go.uber.org/zap"
 )

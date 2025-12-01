@@ -2,8 +2,8 @@ package dynamodbutils
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,13 +12,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func CreateTable() {
-	tableName := "api_key_store"
+func CreateTable(tableName string) error {
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-2"))
 	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
+		return fmt.Errorf("unable to load SDK config, %w", err)
 	}
 
 	client := dynamodb.NewFromConfig(cfg)
@@ -41,29 +40,36 @@ func CreateTable() {
 		BillingMode: types.BillingModePayPerRequest,
 	}
 
-	fmt.Printf("Creating table `%s`.\n", tableName)
 	_, err = client.CreateTable(ctx, input)
 	if err != nil {
-		log.Fatalf("failed to create table: %v", err)
+		var existsErr *types.ResourceInUseException
+		if errors.As(err, &existsErr) {
+			fmt.Printf("Table `%s` already exists\n", tableName)
+		} else {
+			return fmt.Errorf("failed to create table: %w", err)
+		}
+	} else {
+		fmt.Printf("Creating table `%s`.\n", tableName)
+		waiter := dynamodb.NewTableExistsWaiter(client)
+		err = waiter.Wait(ctx, &dynamodb.DescribeTableInput{
+			TableName: aws.String(tableName),
+		}, 5*time.Minute)
+
+		if err != nil {
+			return fmt.Errorf("error waiting for table creation: %w", err)
+		}
+
+		resp, err := client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
+			TableName: aws.String(tableName),
+		})
+
+		if err != nil {
+			return fmt.Errorf("describe table failed: %w", err)
+		}
+
+		fmt.Printf("Table status: %v\n", resp.Table.TableStatus)
 	}
 
-	waiter := dynamodb.NewTableExistsWaiter(client)
-	err = waiter.Wait(ctx, &dynamodb.DescribeTableInput{
-		TableName: aws.String(tableName),
-	}, 5*time.Minute)
-
-	if err != nil {
-		log.Fatalf("error waiting for table creation: %v", err)
-	}
-
-	resp, err := client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
-		TableName: aws.String(tableName),
-	})
-
-	if err != nil {
-		log.Fatalf("describe table failed: %v", err)
-	}
-
-	fmt.Printf("Table status: %v\n", resp.Table.TableStatus)
+	return nil
 
 }

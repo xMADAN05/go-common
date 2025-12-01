@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/xMADAN05/go-common/common/config"
-	"github.com/xMADAN05/go-common/common/logger"
-	"github.com/xMADAN05/go-common/common/middleware"
+	"github.com/xMADAN05/go-common/config"
+	"github.com/xMADAN05/go-common/logger"
+	"github.com/xMADAN05/go-common/middleware"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
