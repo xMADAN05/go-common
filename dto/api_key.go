@@ -1,4 +1,4 @@
-package dto
+package common_dto
 
 type CreateAPIKeyRequest struct {
 	WorkspaceID   string `dynamodbav:"workspace_id"`

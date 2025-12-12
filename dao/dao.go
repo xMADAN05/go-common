@@ -30,6 +30,10 @@ func NewRepository[T any](tableName string, region string) (*DynamoRepository[T]
 	}, nil
 }
 
+func NewRepositoryWithClient[T any](client *dynamodb.Client, tableName string) *DynamoRepository[T] {
+	return &DynamoRepository[T]{client, tableName}
+}
+
 func (r *DynamoRepository[T]) Put(ctx context.Context, item T) error {
 	val, err := attributevalue.MarshalMap(item)
 	if err != nil {
